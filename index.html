@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Human Action Recognition</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <h1>Human Action Recognition</h1>
+        <p>Upload an image to recognize human actions.</p>
+        <div class="upload-area">
+            <input type="file" id="imageUpload" accept="image/*" />
+            <button id="uploadButton"><i class="fas fa-upload"></i> Upload Image</button>
+        </div>
+        <div id="result" class="result"></div>
+        <img id="preview" src="" alt="Image Preview" class="preview" />
+    </div>
+    <script>
+        document.getElementById('uploadButton').addEventListener('click', async () => {
+            const fileInput = document.getElementById('imageUpload');
+            const file = fileInput.files[0];
+
+            if (!file) {
+                alert('Please select an image to upload.');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('image', file);
+
+            try {
+                const response = await fetch('/predict', {
+                    method: 'POST',
+                    body: formData,
+                });
+
+                const data = await response.json();
+                document.getElementById('result').innerText = `Predicted Action: ${data.label}`;
+                document.getElementById('preview').src = URL.createObjectURL(file);
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred while uploading the image.');
+            }
+        });
+    </script>
+</body>
+</html>
